@@ -13,6 +13,8 @@ import org.example.reggie.service.SetmealDishService;
 import org.example.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,6 +89,7 @@ public class SetmealController {
     }
 
     @DeleteMapping
+    @CacheEvict(value = "SetmealCache",allEntries = true)//注意，这边是删除value下所有的内容，无法实现精准删除缓存
     public R<String>delete(@RequestParam List<Long>ids){
 //        log.info("ids:{}",ids);
         setmealService.removeWithDish(ids);
@@ -99,6 +102,7 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/list")
+    @Cacheable(value = "SetmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
     public R<List<Setmeal>>list(Setmeal setmeal){
         LambdaQueryWrapper<Setmeal> queryWrapper=new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId()!=null,Setmeal::getCategoryId,setmeal.getCategoryId());

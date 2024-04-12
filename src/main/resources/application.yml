@@ -8,6 +8,9 @@ spring:
     port: 6379
     password: "123456"
     database: 0
+  cache:
+    redis:
+      time-to-live: 1800000 # 设置缓存数据的过期时间为30min
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
